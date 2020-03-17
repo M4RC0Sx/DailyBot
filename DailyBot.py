@@ -99,7 +99,7 @@ def load_schedule(context):
 
 
 def send_start_message(context, subject, place):
-    result = '<b>INFO:</b> ' + '<i>' + subject + '</i>' + ' is starting at ' + place + ' in 10 minutes!\n'
+    result = f'<b>INFO:</b> <i>{subject}</i> is starting at {place} in 10 minutes!\n'
 
     context.bot.send_message(chat_id=CHAT_ID,
                              text=result,
@@ -107,7 +107,7 @@ def send_start_message(context, subject, place):
 
 
 def send_end_message(context, subject):
-    result = '<b>INFO:</b> ' + '<i>' + subject + '</i>' + ' is ending in 10 minutes!\n'
+    result = f'<b>INFO:</b> <i>{subject}</i> is ending in 10 minutes!\n'
 
     context.bot.send_message(chat_id=CHAT_ID,
                              text=result,
