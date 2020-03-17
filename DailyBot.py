@@ -3,6 +3,7 @@ import json
 import os
 import schedule
 import time
+from datetime import datetime, timedelta
 
 from telegram.ext import CommandHandler
 from telegram.ext import Updater
@@ -39,9 +40,9 @@ def timetable(update, context):
 
     for item in timetable_data['Week']:
         for day in item:
-            result += ('<b>[' + day + ']</b>\n')
+            result += '<b>[{}]</b>'.format(day)
             for subject in item[day]:
-                result += '<i>' + subject['Subject'] + '</i> - (' + subject['Start'] + '-' + subject['End'] + ') - ' + subject['Place'] + '\n'
+                result += "<i>{}</i> - ({} - {}) - {}\n".format(subject['Subject'], subject['Start'], subject['End'], subject['Place'])
             result += '\n'
     result += ''
 
@@ -65,91 +66,40 @@ def load_schedule(context):
             for subject in item[day]:
                 s_subject = subject['Subject']
 
-                start_list = subject['Start'].split(':')
-                if(start_list[0] == '09'):
-                    start_list[0] = '08'
-                elif(start_list[0] == '10'):
-                    start_list[0] = '09'
-                elif(start_list[0] == '11'):
-                    start_list[0] = '10'
-                elif(start_list[0] == '12'):
-                    start_list[0] = '11'
-                elif(start_list[0] == '13'):
-                    start_list[0] = '12'
-                elif(start_list[0] == '14'):
-                    start_list[0] = '13'
-                elif(start_list[0] == '15'):
-                    start_list[0] = '14'
-                elif(start_list[0] == '16'):
-                    start_list[0] = '15'
-                elif(start_list[0] == '17'):
-                    start_list[0] = '16'
-                elif(start_list[0] == '18'):
-                    start_list[0] = '17'
-                elif(start_list[0] == '19'):
-                    start_list[0] = '18'
-                elif(start_list[0] == '20'):
-                    start_list[0] = '19'
-                start_list[1] = '50'
-                s_start = str(start_list[0] + ':' + start_list[1])
+                start_time = datetime.strptime(subject['Start'], "%H:%M") - timedelta(minutes=10)
+                end_time = datetime.strptime(subject['End'], "%H:%M") - timedelta(minutes=10)
 
-                end_list = subject['End'].split(':')
-                if(end_list[0] == '09'):
-                    end_list[0] = '08'
-                elif(end_list[0] == '10'):
-                    end_list[0] = '09'
-                elif(end_list[0] == '11'):
-                    end_list[0] = '10'
-                elif(end_list[0] == '12'):
-                    end_list[0] = '11'
-                elif(end_list[0] == '13'):
-                    end_list[0] = '12'
-                elif(end_list[0] == '14'):
-                    end_list[0] = '13'
-                elif(end_list[0] == '15'):
-                    end_list[0] = '14'
-                elif(end_list[0] == '16'):
-                    end_list[0] = '15'
-                elif(end_list[0] == '17'):
-                    end_list[0] = '16'
-                elif(end_list[0] == '18'):
-                    end_list[0] = '17'
-                elif(end_list[0] == '19'):
-                    end_list[0] = '18'
-                elif(end_list[0] == '20'):
-                    end_list[0] = '19'
-                end_list[1] = '50'
-                s_end = str(end_list[0] + ':' + end_list[1])
+                s_start = start_time.strftime("%H:%M")
+                s_end = end_time.strftime("%H:%M")
 
                 s_place = subject['Place']
 
                 if s_day == 'Monday':
-                    schedule.every().monday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().monday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().monday
                 elif s_day == 'Tuesday':
-                    schedule.every().tuesday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().tuesday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().tuesday
                 elif s_day == 'Wednesday':
-                    schedule.every().wednesday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().wednesday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().wednesday
                 elif s_day == 'Thursday':
-                    schedule.every().thursday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().thursday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().thursday
                 elif s_day == 'Friday':
-                    schedule.every().friday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().friday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().friday
                 elif s_day == 'Saturday':
-                    schedule.every().saturday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().saturday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().saturday
                 elif s_day == 'Sunday':
-                    schedule.every().sunday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().sunday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().sunday
+                
+                day.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
+                day.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                
+                
+
                 print(s_start)
                 print(s_end)
 
 
 def send_start_message(context, subject, place):
-    result = '<b>INFO:</b> ' + '<i>' + subject + '</i>' + ' is starting at ' + place + ' in 10 minutes!\n'
+    result = f'<b>INFO:</b> <i>{subject}</i> is starting at {place} in 10 minutes!\n'
 
     context.bot.send_message(chat_id=CHAT_ID,
                              text=result,
@@ -157,7 +107,7 @@ def send_start_message(context, subject, place):
 
 
 def send_end_message(context, subject):
-    result = '<b>INFO:</b> ' + '<i>' + subject + '</i>' + ' is ending in 10 minutes!\n'
+    result = f'<b>INFO:</b> <i>{subject}</i> is ending in 10 minutes!\n'
 
     context.bot.send_message(chat_id=CHAT_ID,
                              text=result,
