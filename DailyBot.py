@@ -15,8 +15,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s\
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-CHAT_ID = "INSERT_YOUR_CHAT_ID_HERE"
-BOT_TOKEN = "INSERT_YOUR_BOT_TOKEN_HERE"
+CHAT_ID = INSERT_YOUR_CHAT_ID_HERE
+BOT_TOKEN = INSERT_YOUR_BOT_TOKEN_HERE
 
 
 def error(update, context):
@@ -40,9 +40,9 @@ def timetable(update, context):
 
     for item in timetable_data['Week']:
         for day in item:
-            result += ('<b>[' + day + ']</b>\n')
+            result += '<b>[{}]</b>'.format(day)
             for subject in item[day]:
-                result += '<i>' + subject['Subject'] + '</i> - (' + subject['Start'] + '-' + subject['End'] + ') - ' + subject['Place'] + '\n'
+                result += "<i>{}</i> - ({} - {}) - {}\n".format(subject['Subject'], subject['Start'], subject['End'], subject['Place'])
             result += '\n'
     result += ''
 
@@ -75,26 +75,25 @@ def load_schedule(context):
                 s_place = subject['Place']
 
                 if s_day == 'Monday':
-                    schedule.every().monday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().monday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().monday
                 elif s_day == 'Tuesday':
-                    schedule.every().tuesday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().tuesday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().tuesday
                 elif s_day == 'Wednesday':
-                    schedule.every().wednesday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().wednesday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().wednesday
                 elif s_day == 'Thursday':
-                    schedule.every().thursday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().thursday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().thursday
                 elif s_day == 'Friday':
-                    schedule.every().friday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().friday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().friday
                 elif s_day == 'Saturday':
-                    schedule.every().saturday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().saturday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().saturday
                 elif s_day == 'Sunday':
-                    schedule.every().sunday.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
-                    schedule.every().sunday.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                    day = schedule.every().sunday
+                
+                day.at(s_start).do(send_start_message, context=context, subject=s_subject, place=s_place)
+                day.at(s_end).do(send_end_message, context=context, subject=s_subject)
+                
+                
+
                 print(s_start)
                 print(s_end)
 
@@ -138,4 +137,4 @@ def main():
 
 
 if __name__ == '__main__':
-    load_schedule(None)
+    main()
