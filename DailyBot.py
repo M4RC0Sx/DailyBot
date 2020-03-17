@@ -3,6 +3,7 @@ import json
 import os
 import schedule
 import time
+from datetime import datetime, timedelta
 
 from telegram.ext import CommandHandler
 from telegram.ext import Updater
@@ -14,8 +15,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s\
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-CHAT_ID = INSERT_YOUR_CHAT_ID_HERE
-BOT_TOKEN = INSERT_YOUR_BOT_TOKEN_HERE
+CHAT_ID = "INSERT_YOUR_CHAT_ID_HERE"
+BOT_TOKEN = "INSERT_YOUR_BOT_TOKEN_HERE"
 
 
 def error(update, context):
@@ -65,61 +66,11 @@ def load_schedule(context):
             for subject in item[day]:
                 s_subject = subject['Subject']
 
-                start_list = subject['Start'].split(':')
-                if(start_list[0] == '09'):
-                    start_list[0] = '08'
-                elif(start_list[0] == '10'):
-                    start_list[0] = '09'
-                elif(start_list[0] == '11'):
-                    start_list[0] = '10'
-                elif(start_list[0] == '12'):
-                    start_list[0] = '11'
-                elif(start_list[0] == '13'):
-                    start_list[0] = '12'
-                elif(start_list[0] == '14'):
-                    start_list[0] = '13'
-                elif(start_list[0] == '15'):
-                    start_list[0] = '14'
-                elif(start_list[0] == '16'):
-                    start_list[0] = '15'
-                elif(start_list[0] == '17'):
-                    start_list[0] = '16'
-                elif(start_list[0] == '18'):
-                    start_list[0] = '17'
-                elif(start_list[0] == '19'):
-                    start_list[0] = '18'
-                elif(start_list[0] == '20'):
-                    start_list[0] = '19'
-                start_list[1] = '50'
-                s_start = str(start_list[0] + ':' + start_list[1])
+                start_time = datetime.strptime(subject['Start'], "%H:%M") - timedelta(minutes=10)
+                end_time = datetime.strptime(subject['End'], "%H:%M") - timedelta(minutes=10)
 
-                end_list = subject['End'].split(':')
-                if(end_list[0] == '09'):
-                    end_list[0] = '08'
-                elif(end_list[0] == '10'):
-                    end_list[0] = '09'
-                elif(end_list[0] == '11'):
-                    end_list[0] = '10'
-                elif(end_list[0] == '12'):
-                    end_list[0] = '11'
-                elif(end_list[0] == '13'):
-                    end_list[0] = '12'
-                elif(end_list[0] == '14'):
-                    end_list[0] = '13'
-                elif(end_list[0] == '15'):
-                    end_list[0] = '14'
-                elif(end_list[0] == '16'):
-                    end_list[0] = '15'
-                elif(end_list[0] == '17'):
-                    end_list[0] = '16'
-                elif(end_list[0] == '18'):
-                    end_list[0] = '17'
-                elif(end_list[0] == '19'):
-                    end_list[0] = '18'
-                elif(end_list[0] == '20'):
-                    end_list[0] = '19'
-                end_list[1] = '50'
-                s_end = str(end_list[0] + ':' + end_list[1])
+                s_start = start_time.strftime("%H:%M")
+                s_end = end_time.strftime("%H:%M")
 
                 s_place = subject['Place']
 
@@ -187,4 +138,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    load_schedule(None)
