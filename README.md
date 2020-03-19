@@ -2,7 +2,7 @@
 Simple DailyBot made using Python Telegram API. It just schedules your timetable based on a JSON file and sends you alerts via telegram 10 minutes before a class is going to start or finish, telling you the place where it is going to take place.
 
 ## Requeriments
-* Python3
+* Python3 **(You need version 3.6 or later in order to use the new string formatting method)**
 * Python3 - logging
 * Python3 - json
 * Python3 - os
